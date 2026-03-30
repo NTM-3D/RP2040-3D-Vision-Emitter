@@ -1,0 +1,18 @@
+; IR waveform generator for 3D Vision emitter
+;
+; Each FIFO word: bit[31] = pin level, bits[30:0] = delay ticks.
+; PIO clock = 2 MHz (0.5 us per tick, matches AVR timer1 at 16 MHz/8).
+; Edge-to-edge overhead = 4 ticks.
+;
+; NOTE: This file is documentation only.  The firmware uses hardcoded
+;       instruction words in ir_emitter.c (see ir_wave_program_instructions).
+
+.program ir_wave
+
+.wrap_target
+    pull block          ; Wait for data from DMA via TX FIFO
+    out pins, 1         ; Shift MSB (bit 31) to output pin
+    out x, 31           ; Shift remaining 31 bits into X (delay count)
+delay_loop:
+    jmp x-- delay_loop  ; Count down
+.wrap

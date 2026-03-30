@@ -1,0 +1,65 @@
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+cmake_install.cmake
+CMakeLists.txt.user
+
+# Build directories
+build/
+Build/
+out/
+dist/
+
+# Visual Studio
+.vs/
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.sln.DotSettings
+
+# Visual Studio Code
+.vscode/
+*.code-workspace
+
+# IDE
+*.swp
+*.swo
+*~
+.idea/
+.DS_Store
+
+# Build outputs
+*.exe
+*.dll
+*.lib
+*.obj
+*.o
+*.a
+*.so
+*.dylib
+*.pdb
+*.ilk
+*.uf2
+*.elf
+
+# Logs
+*.log
+
+# Dependencies (if fetched)
+_deps/
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+.env
+.env.local
+
+# OS specific
+Thumbs.db
+.DS_Store
+.AppleDouble
+.LSOverride
