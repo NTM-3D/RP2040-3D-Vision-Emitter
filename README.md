@@ -27,8 +27,6 @@ RP2040 3D Vision Emitter is a reimplementation of the original [3DVisionAVR](htt
 | Standby LED output | GPIO5 |
 | Built-in RGB status LED (WS2812B) | GPIO16 |
 
-Driver mode only firmware does not use external sync pins.
-
 ### IR Output Circuit
 
 The IR LED is driven via GPIO2 through a 2N3904 NPN transistor. The 120Ω resistor is in series with the IR LED to limit the LED current. GPIO2 connects directly to the base of the transistor to switch it.
@@ -54,7 +52,7 @@ The RP2040-Zero's onboard WS2812B RGB LED (GPIO16) reflects the current emitter 
 | Disconnected | 🔴 Red | No USB connection to the host |
 | Idle | 🔵 Blue | Connected but emitter not active |
 | 3D active | 🟢 Green | Actively emitting IR sync frames |
-| Holdover active | 🟠 Amber | Running a synthetic holdover stream while waiting for the next frame signal |
+| Holdover active | 🟠 Orange | Running a synthetic holdover stream while waiting for the next frame signal |
 
 ---
 
