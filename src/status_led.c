@@ -97,16 +97,10 @@ void status_led_set_rgb(uint8_t red, uint8_t green, uint8_t blue) {
     g_status_led_last_color = color;
 }
 
-void status_led_update(bool usb_connected, bool emitter_active, bool holdover_active) {
+void status_led_update(bool usb_connected, bool emitter_active) {
     if (!usb_connected) {
 		// Red when USB is not connected
         status_led_set_rgb(0xffu, 0x00u, 0x00u);
-        return;
-    }
-
-    if (holdover_active) {
-        // Orange while running holdover stream
-        status_led_set_rgb(0xffu, 0x80u, 0x00u);
         return;
     }
 

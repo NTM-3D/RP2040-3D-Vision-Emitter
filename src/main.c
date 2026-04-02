@@ -40,6 +40,6 @@ int main(void) {
         tud_task();
         uint32_t now_ms = emitter_millis();
         emitter_task(now_ms);
-        status_led_update(tud_mounted(), emitter_is_active(), emitter_is_holdover_active());
+        status_led_update(tud_mounted(), emitter_is_active());
     }
 }

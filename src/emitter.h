@@ -19,7 +19,6 @@ void emitter_handle_swap_out(const uint8_t *data, uint16_t len);
 uint16_t emitter_build_control_in(uint8_t *out, uint16_t max_len);
 bool emitter_control_in_pending(void);
 bool emitter_is_active(void);
-bool emitter_is_holdover_active(void);
 
 uint32_t emitter_millis(void);
 

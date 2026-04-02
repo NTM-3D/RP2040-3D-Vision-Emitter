@@ -11,6 +11,8 @@ build/
 Build/
 out/
 dist/
+.snapshots/
+__pycache__/
 
 # Visual Studio
 .vs/
@@ -57,6 +59,7 @@ _deps/
 *.swp
 .env
 .env.local
+*.pcapng
 
 # OS specific
 Thumbs.db

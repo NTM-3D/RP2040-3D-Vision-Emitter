@@ -82,6 +82,10 @@ static bool emitterd_xfer_cb(uint8_t rhport, uint8_t ep_addr, xfer_result_t resu
         return true;
     }
 
+    if (ep_addr == EMITTER_EP_BUTTON_IN) {
+        return true;
+    }
+
     return false;
 }
 

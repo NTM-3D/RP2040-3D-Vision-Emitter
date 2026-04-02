@@ -236,25 +236,14 @@ void ir_emitter_init(void) {
     gpio_set_dir(IR_PIN, GPIO_OUT);
     gpio_put(IR_PIN, 0);
 
-    gpio_init(EYE_LED_PIN);
-    gpio_set_dir(EYE_LED_PIN, GPIO_OUT);
-    gpio_put(EYE_LED_PIN, 0);
-
-    gpio_init(ACTIVE_LED_PIN);
-    gpio_set_dir(ACTIVE_LED_PIN, GPIO_OUT);
-    gpio_put(ACTIVE_LED_PIN, 0);
-
     ir_pio_init();
 }
 
 void ir_emitter_update(uint32_t cur_time_ms) {
     if (g_emitter_active) {
         if (!g_emitter_active_last) {
-            gpio_put(ACTIVE_LED_PIN, 1);
             g_emitter_active_last = true;
         } else if ((cur_time_ms - g_last_frame_ms) >= 200u) {
-            gpio_put(ACTIVE_LED_PIN, 0);
-            gpio_put(EYE_LED_PIN, 1);
             g_emitter_active = false;
             g_emitter_active_last = false;
         }
@@ -290,10 +279,8 @@ static void do_fire_waveform(void) {
     g_waveform_len = build_waveform(token);
 
     g_emitter_active = true;
-    g_cur_eye        = g_next_eye;
+    g_cur_eye        = (uint8_t)((token >> 1) & 0x01u);
     g_last_frame_ms  = emitter_millis();
-
-    gpio_put(EYE_LED_PIN, 1);
 
     ir_start_dma(g_waveform, g_waveform_len);
     pio_sm_set_enabled(g_ir_pio, g_ir_sm, true);
@@ -306,9 +293,28 @@ static int64_t frame_alarm_cb(alarm_id_t id, void *user_data) {
     return 0;  /* don't reschedule */
 }
 
-void ir_emitter_start_frame(void) {
+static bool schedule_frame_for_target_us(uint8_t token, uint64_t now, uint64_t target) {
+    uint32_t save = save_and_disable_interrupts();
+
+    int64_t delay = (int64_t)target - (int64_t)now;
+    if (delay < 50) delay = 50;
+
+    if (g_frame_alarm > 0) {
+        restore_interrupts(save);
+        return false;
+    }
+
+    g_pending_token = token;
+    g_frame_alarm = add_alarm_in_us(
+        (uint64_t)delay, frame_alarm_cb, NULL, true);
+
+    restore_interrupts(save);
+    return (g_frame_alarm > 0);
+}
+
+bool ir_emitter_start_frame(void) {
     uint8_t token = (uint8_t)(g_next_eye * 2u);
-    if (g_protocol->sizes[token] == 0u) return;
+    if (g_protocol->sizes[token] == 0u) return false;
 
     uint64_t now = time_us_64();
 
@@ -356,24 +362,14 @@ void ir_emitter_start_frame(void) {
             g_pll_frame_count++;
     }
 
-    /* Compute alarm delay from now; clamp to a small minimum */
-    int64_t delay = (int64_t)target - (int64_t)now;
-    if (delay < 50) delay = 50;
+    return schedule_frame_for_target_us(token, now, target);
+}
 
-    uint32_t save = save_and_disable_interrupts();
+bool ir_emitter_start_frame_at(uint64_t target_us) {
+    uint8_t token = (uint8_t)(g_next_eye * 2u);
+    if (g_protocol->sizes[token] == 0u) return false;
 
-    /* Cancel any pending alarm */
-    if (g_frame_alarm > 0) {
-        cancel_alarm(g_frame_alarm);
-        g_frame_alarm = 0;
-    }
-
-    g_pending_token = token;
-
-    g_frame_alarm = add_alarm_in_us(
-        (uint64_t)delay, frame_alarm_cb, NULL, true);
-
-    restore_interrupts(save);
+    return schedule_frame_for_target_us(token, time_us_64(), target_us);
 }
 
 void ir_emitter_force_idle(void) {
@@ -394,9 +390,6 @@ void ir_emitter_force_idle(void) {
 
     g_emitter_active      = false;
     g_emitter_active_last = false;
-
-    gpio_put(EYE_LED_PIN, 1);
-    gpio_put(ACTIVE_LED_PIN, 0);
 }
 
 bool ir_emitter_is_active(void) {
@@ -405,6 +398,10 @@ bool ir_emitter_is_active(void) {
 
 bool ir_emitter_is_busy(void) {
     return (g_frame_alarm > 0) || ir_dma_is_busy();
+}
+
+uint8_t ir_emitter_get_cur_eye(void) {
+    return g_cur_eye;
 }
 
 uint32_t ir_emitter_get_last_valid_period_us(void) {

@@ -1,33 +1,35 @@
 # RP2040 3D Vision Emitter
 
 RP2040 3D Vision Emitter is a reimplementation of the original [3DVisionAVR](https://github.com/lukis101/3DVisionAVR) project on the RP2040 microcontroller.  
-**Currently only driver mode and 120 Hz frame rate is supported.**
-
-> ⚠️ **Disclaimer**: This firmware is a work in progress and is not guaranteed to be fully stable. Occasional flickering has been observed and is a known issue. If you have suggestions, fixes, or improvements, please open an issue or pull request — all contributions are very welcome!
-
----
+**Only driver mode and 120 Hz refresh rate is supported.**
 
 ## Features
 
 - **NVIDIA 3D Vision Emitter compatibility**: Emulates the NVIDIA 3D Vision emitter
 - **IR Frame Engine**: Implements the 3D Vision IR protocol with RP2040 hardware-timed scheduling for accurate frame timing at 120 Hz
+- **IR protocol support**: Included are 3D Vision, Samsung, XPAND, Sharp, Sony, and Panasonic. 3D Vision is the active one and the only one that has been tested.
 - **Status LED States**: Built-in WS2812B RGB status indication (see [Status LED](#status-led) below)
-
----
 
 ## Hardware
 
-### GPIO Pinout
+### GPIO pinout
 
 | Function | GPIO |
 |----------|------|
 | IR output | GPIO2 |
-| Eye LED output | GPIO3 |
-| Active LED output | GPIO4 |
-| Standby LED output | GPIO5 |
 | Built-in RGB status LED (WS2812B) | GPIO16 |
 
-### IR Output Circuit
+## Status LED
+
+The RP2040-Zero's built-in WS2812B RGB LED reflects the current emitter state:
+
+| State | Color | Description |
+|-------|-------|-------------|
+| Disconnected | 🔴 Red | No USB connection to the host |
+| Idle | 🔵 Blue | Connected but emitter not active |
+| 3D active | 🟢 Green | Actively emitting IR sync frames |
+
+### IR output circuit
 
 The IR LED is driven via GPIO2 through a 2N3904 NPN transistor. The 120Ω resistor is in series with the IR LED to limit the LED current. GPIO2 connects directly to the base of the transistor to switch it.
 
@@ -41,20 +43,15 @@ GPIO2 ──────── ┤ Base  2N3904
                     │
                    GND
 ```
----
 
-## Status LED
+You can also just connect the IR LED directly between GPIO2 and GND. You don't even have to solder it, just twist the the legs so it has a good connection. The range won't be as good and the LED might not live as long but it works. See below for examples of both variants.
 
-The RP2040-Zero's onboard WS2812B RGB LED (GPIO16) reflects the current emitter state:
-
-| State | Color | Description |
-|-------|-------|-------------|
-| Disconnected | 🔴 Red | No USB connection to the host |
-| Idle | 🔵 Blue | Connected but emitter not active |
-| 3D active | 🟢 Green | Actively emitting IR sync frames |
-| Holdover active | 🟠 Orange | Running a synthetic holdover stream while waiting for the next frame signal |
-
----
+### Hardware images
+<p>
+  <a href="Images/advanced.jpg"><img src="Images/advanced.jpg" width="250"></a>
+  <a href="Images/simple_active.jpg"><img src="Images/simple_active.jpg" width="250"></a>
+  <a href="Images/simple_idle.jpg"><img src="Images/simple_idle.jpg" width="250"></a>
+</p>
 
 ## Building
 
@@ -66,7 +63,7 @@ The RP2040-Zero's onboard WS2812B RGB LED (GPIO16) reflects the current emitter 
 - ARM GCC toolchain (`arm-none-eabi-gcc`)
 - `pico-sdk` (with submodules)
 
-### Quick Build (Recommended)
+### Quick build (Recommended)
 
 Run:
 
@@ -84,7 +81,7 @@ Output:
 
 - `build/RP2040_3D_Vision_Emitter.uf2`
 
-### Manual Build
+### Manual build
 
 ```bat
 set PICO_SDK_PATH=C:\path\to\pico-sdk
@@ -92,7 +89,15 @@ cmake -S . -B build -G Ninja
 cmake --build build -j
 ```
 
----
+## Flashing
+
+The RP2040 is flashed by copying the `.uf2` file onto the board while it is in bootloader mode.
+
+1. Hold the BOOT button on the RP2040-Zero.
+2. While holding BOOT, connect the board to your PC via USB (or press and release RESET if already connected).
+3. Release the BOOT button. The board will appear as a USB mass storage device named `RPI-RP2`.
+4. Copy `RP2040_3D_Vision_Emitter-*.uf2` onto the `RPI-RP2` drive.
+5. The board will automatically reboot and start running the firmware.
 
 ## Credits
 
