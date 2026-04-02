@@ -1,6 +1,7 @@
 # RP2040 3D Vision Emitter
 
-RP2040 3D Vision Emitter is a reimplementation of the original [3DVisionAVR](https://github.com/lukis101/3DVisionAVR) project on the RP2040 microcontroller.  
+RP2040 3D Vision Emitter is inspired by the original [3DVisionAVR](https://github.com/lukis101/3DVisionAVR) and reimplements it on the RP2040 microcontroller. What began as a port has matured into an improved and more robust version that resolves many of the issues found in the original firmware while expanding its capabilities in regards to the 3D Vision driver mode.  
+
 **Only driver mode and 120 Hz refresh rate is supported.**
 
 ## Features
