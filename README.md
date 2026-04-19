@@ -43,8 +43,12 @@ GPIO2 ──────── ┤ Base  2N3904
                     │
                    GND
 ```
+If you don't want to build your own circuit you can buy a premade 1/3 W IR LED board like this one.  
+<a href="Images/ir_board.png"><img src="Images/ir_board.png" width="250"></a> 
 
-You can also just connect the IR LED directly between GPIO2 and GND. You don't even have to solder it, just twist the the legs so it has a good connection. The range won't be as good and the LED might not live as long but it works. See below for examples of both variants.
+You can also just connect the IR LED directly between GPIO2 and GND. You don't even have to solder it, just twist the the legs so it has a good connection. The range won't be as good and the LED might not live as long but it works.  
+See below for examples of both variants.
+ 
 
 ### Hardware images
 <p>

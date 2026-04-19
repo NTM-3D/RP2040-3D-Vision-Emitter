@@ -36,7 +36,7 @@ static uint g_status_led_offset = 0;
 static bool g_status_led_ready = false;
 static uint32_t g_status_led_last_color = 0xffffffffu;
 
-#define STATUS_LED_BRIGHTNESS_PERCENT 3u
+#define STATUS_LED_BRIGHTNESS_PERCENT 1u
 
 static inline uint8_t scale_brightness(uint8_t value) {
     return (uint8_t)(((uint16_t)value * STATUS_LED_BRIGHTNESS_PERCENT) / 100u);
